@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Yamato
+ * Copyright 2015 Yamato
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package mod.ymt.sugar;
 
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeDecorator;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -27,13 +28,12 @@ public class BiomeSugarDecorator extends BiomeDecorator {
 	private final WorldGenerator sugarGen;
 	private final WorldGenerator cakeGen;
 	private final SugarBiomeCore core = SugarBiomeCore.getInstance();
-	private final int sugarBlockId = core.getSugarBlockId();
+	private final Block sugarBlock = core.getSugarBlock();
 	private final int sugarBiomeId = core.getSugarBiomeId();
 
 	public BiomeSugarDecorator(BiomeGenBase owner) {
-		super(owner);
-		this.voidGen = new WorldGenMinable(0, 10); // 空間生成
-		this.sugarGen = new WorldGenMinable(sugarBlockId, 32); // 砂糖ブロック生成
+		this.voidGen = new WorldGenMinable(Blocks.air, 10); // 空間生成
+		this.sugarGen = new WorldGenMinable(sugarBlock, 32); // 砂糖ブロック生成
 		this.cakeGen = new WorldGenCakeForSugarLand();
 		this.reedGen = new WorldGenReedForSugarLand();
 		this.ironGen = new WorldGenMinableClipper(this.ironGen, 0, 48); // 鉄の生成範囲を 0 ～ 48 に制限
@@ -51,8 +51,8 @@ public class BiomeSugarDecorator extends BiomeDecorator {
 	}
 
 	@Override
-	protected void decorate() {
-		super.decorate();
+	protected void genDecorations(BiomeGenBase owner) {
+		super.genDecorations(owner);
 		// 表層の石を砂糖に置き換え
 		World world = this.currentWorld;
 		for (int x = 0; x < 16; x++) {
@@ -64,8 +64,8 @@ public class BiomeSugarDecorator extends BiomeDecorator {
 					int y = world.getTopSolidOrLiquidBlock(posX, posZ);
 					int height = 24 + this.randomGenerator.nextInt(5);
 					for (int i = 0; i < height && y > 0; i++, y--) {
-						if (world.getBlockId(posX, y, posZ) == Block.stone.blockID) {
-							world.setBlock(posX, y, posZ, sugarBlockId, 0, 2);
+						if (world.getBlock(posX, y, posZ) == Blocks.stone) {
+							world.setBlock(posX, y, posZ, sugarBlock, 0, 2);
 						}
 					}
 				}

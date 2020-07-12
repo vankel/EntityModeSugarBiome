@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Yamato
+ * Copyright 2015 Yamato
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,43 +16,44 @@
 package mod.ymt.sugar;
 
 import java.util.Random;
-import mod.ymt.cmn.Utils;
+import mod.ymt.sugar.cmn.Utils;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockSand;
+import net.minecraft.block.BlockFalling;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * @author Yamato
  *
  */
-public class BlockSugar extends BlockSand {
+public class BlockSugar extends BlockFalling {
 	private static final boolean ENABLE_SPAWNMAID = false;
 	private static final int ENTITY_LIMIT = 512; // 水に触れた際に砂糖を生成するかどうかのエンティティ限界値
 	private static final Material sugarMaterial = new Material(MapColor.snowColor);
-
-	private final SugarBiomeCore core = SugarBiomeCore.getInstance();
-
-	public BlockSugar(int blockId) {
-		super(blockId, sugarMaterial);
+	
+	public BlockSugar() {
+		super(sugarMaterial);
 		setHardness(0.5F);
-		setStepSound(soundSandFootstep);
-        this.setCreativeTab(CreativeTabs.tabBlock);
+		setStepSound(soundTypeSand);
+		setHarvestLevel("shovel", 0);
+		this.setCreativeTab(CreativeTabs.tabBlock);
 	}
-
+	
 	@Override
 	public int damageDropped(int metadata) {
 		return 0; // Item.sugar の metadata = 0
 	}
-
+	
 	@Override
 	public void dropBlockAsItemWithChance(World world, int x, int y, int z, int metadata, float probability, int fortune) {
 		if (!world.isRemote) {
@@ -62,46 +63,53 @@ public class BlockSugar extends BlockSand {
 			}
 			for (int i = 0; i < quantity; i++) {
 				if (world.rand.nextFloat() <= probability) {
-					int id = idDropped(metadata, world.rand, fortune);
-					if (0 < id) {
-						dropBlockAsItem_do(world, x, y, z, new ItemStack(id, 1, this.damageDropped(metadata)));
+					Item item = getItemDropped(metadata, world.rand, fortune);
+					if (item != null) {
+						dropBlockAsItem(world, x, y, z, new ItemStack(item, 1, this.damageDropped(metadata)));
 					}
 				}
 			}
 		}
 	}
-
+	
 	@Override
-	public boolean func_82506_l() { // scheduledUpdatesAreImmediate を禁止
+	public boolean func_149698_L() { // scheduledUpdatesAreImmediate を禁止
 		return false;
 	}
-
+	
 	@Override
-	public int idDropped(int metadata, Random rand, int fortune) {
-		return Item.sugar.itemID;
+	public Item getItemDropped(int metadata, Random rand, int fortune) {
+		return Items.sugar;
 	}
-
+	
+	@Override
+	public boolean isFireSource(World world, int x, int y, int z, ForgeDirection side) {
+		return true;
+	}
+	
 	public boolean isNatureSugar(int metadata) {
 		return (metadata & 1) == 0;
 	}
-
+	
 	@Override
-	public void onNeighborBlockChange(World world, int x, int y, int z, int changedBlockId) {
+	public void onNeighborBlockChange(World world, int x, int y, int z, Block changedBlock) {
 		if (isTouchWater(world, x, y, z)) {
 			if (Utils.isServerSide(world)) {
 				if (world.loadedEntityList.size() < ENTITY_LIMIT) { // エンティティ数が一定以上の時には砂糖を生成しない
 					int cnt = world.rand.nextInt(2);
 					if (0 < cnt) {
-						int meta = world.getBlockMetadata(x, y, z);
-						int itemId = idDropped(meta, world.rand, 0);
-						dropBlockAsItem_do(world, x, y, z, new ItemStack(itemId, cnt, this.damageDropped(meta)));
+						int metadata = world.getBlockMetadata(x, y, z);
+						Item item = getItemDropped(metadata, world.rand, 0);
+						if (item != null) {
+							dropBlockAsItem(world, x, y, z, new ItemStack(item, 1, this.damageDropped(metadata)));
+						}
 					}
 				}
 				world.setBlockToAir(x, y, z);
 			}
 			return;
 		}
-		if (world.getBlockId(x, y + 1, z) == Block.pumpkin.blockID) {
+		if (world.getBlock(x, y + 1, z) == Blocks.pumpkin) {
 			if (ENABLE_SPAWNMAID) {
 				if (Utils.isServerSide(world)) {
 					Entity ent = EntityList.createEntityByName("LittleMaid", world);
@@ -119,14 +127,14 @@ public class BlockSugar extends BlockSand {
 				return;
 			}
 		}
-		super.onNeighborBlockChange(world, x, y, z, changedBlockId);
+		super.onNeighborBlockChange(world, x, y, z, changedBlock);
 	}
-
+	
 	@Override
 	public int quantityDropped(Random rand) {
 		return 4;
 	}
-
+	
 	@Override
 	public int quantityDroppedWithBonus(int fortune, Random rand) {
 		int result = quantityDropped(rand);
@@ -135,12 +143,7 @@ public class BlockSugar extends BlockSand {
 		}
 		return result;
 	}
-
-	@Override
-	public void registerIcons(IconRegister par1IconRegister) {
-		this.blockIcon = par1IconRegister.registerIcon("mod.ymt.sugar01");
-	}
-
+	
 	private boolean isTouchWater(World world, int x, int y, int z) {
 		if (isWater(world, x, y + 1, z, false))
 			return true;
@@ -154,11 +157,11 @@ public class BlockSugar extends BlockSand {
 			return true;
 		return false;
 	}
-
+	
 	private boolean isWater(World world, int x, int y, int z, boolean ignoreUnderFlow) {
 		if (y < 0)
 			return false;
-		if (world.getBlockMaterial(x, y, z) != Material.water)
+		if (world.getBlock(x, y, z).getMaterial() != Material.water)
 			return false;
 		int meta = world.getBlockMetadata(x, y, z);
 		if (ignoreUnderFlow && 8 <= meta)

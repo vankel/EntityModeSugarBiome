@@ -8,6 +8,7 @@ EntityModeSugarBiome(砂糖バイオーム)
 
 1. 砂糖４個からクラフトできる「砂糖ブロック」が追加されます
 2. 砂糖ブロックで表面が覆われた "SugarLand" バイオームが追加されます
+3. LittleMaidMob が導入されている時には、メイドさんに "シュガーハンター" が追加されます
 
 
 ## スクリーンショット
@@ -17,9 +18,8 @@ EntityModeSugarBiome(砂糖バイオーム)
 
 ## 前提
 
-- Minecraft 1.6.4
-- MinecraftForge 1.6.4
-- YMTLib 164v2
+- Minecraft 1.7.10
+- MinecraftForge 1.7.10
 
 
 ## 導入
@@ -60,20 +60,15 @@ minecraft 自体の利用条件に縛られることに注意してください�
 ## Tips
 
 - 天然の砂糖ブロックには幸運付きツールが有効です。
-- [おまけ機能] ケーキがシルクタッチ付きツールで回収できるようになります。
-- [おまけ機能] スポンジが水を吸うようになります。
+- 砂糖バイオームの ID を 0 にすると、砂糖バイオームは生成されなくなります。
 
 
 ## Config(mod_SugarBiome.txt)
 
-    enable=true         # MODの有効化/無効化
-    sugarBlockId=203    # 砂糖ブロックのID
     sugarBiomeId=55     # 砂糖バイオームのID
-    replaceCake=false   # 既存ケーキの挙動変更を有効化/無効化
-    replaceSponge=false # 既存スポンジの挙動変更を有効化/無効化
 
 
-## Copyright 2013 Yamato
+## Copyright 2015 Yamato
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -90,6 +85,7 @@ limitations under the License.
 
 ## History
 
+- 17Av1: Minecraft1.7.10 に対応
 - 164v2: メイドさんキビ農家モードを復活しました
 - 164v1: Minecraft1.6.4 に対応
 - 162v2: 幾つかのバグ修正

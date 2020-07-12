@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Yamato
+ * Copyright 2015 Yamato
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ import java.util.List;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeDecorator;
 import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.biome.SpawnListEntry;
 
 /**
  * @author Yamato
@@ -31,26 +31,29 @@ import net.minecraft.world.biome.SpawnListEntry;
 public class BiomeGenSugarLand extends BiomeGenBase {
 	private boolean initializedSpawnList = false;
 
-	public BiomeGenSugarLand(int biomeId, int sugarBlockId) {
+	public BiomeGenSugarLand(int biomeId, Block sugarBlock) {
 		super(biomeId);
 		setBiomeName("SugarLand");
-		this.topBlock = (byte) sugarBlockId;
-		this.fillerBlock = (byte) sugarBlockId;
+		this.topBlock = sugarBlock;
+		this.fillerBlock = sugarBlock;
 		this.color = 16777215;
+		setDisableRain();
+		setHeight(height_LowPlains);
 		spawnableCreatureList.clear();
 	}
 
 	@Override
 	public void decorate(World world, Random rand, int x, int z) {
 		super.decorate(world, rand, x, z);
+		SugarBiomeCore.getInstance().logFine("decorate: x = " + x + ", z = " + z);
 		// エメラルド生成
 		int chance = 3 + rand.nextInt(6);
 		for (int i = 0; i < chance; i++) {
 			int posX = x + rand.nextInt(16);
 			int posY = rand.nextInt(28) + 4;
 			int posZ = z + rand.nextInt(16);
-			if (world.getBlockId(posX, posY, posZ) == Block.stone.blockID) {
-				world.setBlock(posX, posY, posZ, Block.oreEmerald.blockID, 0, 2);
+			if (world.getBlock(posX, posY, posZ) == Blocks.stone) {
+				world.setBlock(posX, posY, posZ, Blocks.emerald_ore, 0, 2);
 			}
 		}
 	}
@@ -79,14 +82,5 @@ public class BiomeGenSugarLand extends BiomeGenBase {
 	@Override
 	public BiomeDecorator createBiomeDecorator() {
 		return new BiomeSugarDecorator(this);
-	}
-
-	private static Class<?> findClassOrNull(String cls) {
-		try {
-			return Class.forName(cls);
-		}
-		catch (ClassNotFoundException e) {
-			return null;
-		}
 	}
 }

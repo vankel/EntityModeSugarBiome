@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Yamato
+ * Copyright 2015 Yamato
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
  */
 package mod.ymt.sugar;
 
-import mod.ymt.cmn.CfgFile;
-import net.minecraft.world.biome.SpawnListEntry;
+import mod.ymt.sugar.cmn.CfgFile;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -25,25 +24,16 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
  * @author Yamato
  *
  */
-@Mod(modid = "mod.ymt.sugar.SugarBiome", name = "EntityModeSugarBiome", version = "164v2", dependencies = "required-after:mod.ymt.cmn.YMTLib")
+@Mod(modid = "mod.ymt.sugar.EntityModeSugarBiome", name = "EntityModeSugarBiome", version = "17Av1", dependencies="after:lmmx")
 public class SugarBiome {
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		CfgFile cfgFile = new CfgFile("mod_SugarBiome.txt");
-		int sugarBlockId = cfgFile.getInt("sugarBlockId", 203, 0, 255);
 		int sugarBiomeId = cfgFile.getInt("sugarBiomeId", 55, 0, 127);
-		boolean replaceCake = cfgFile.getBoolean("replaceCake", false);
-		boolean replaceSponge = cfgFile.getBoolean("replaceSponge", false);
-		boolean enable = cfgFile.getBoolean("enable", true);
 		cfgFile.save();
-
-		if (enable) {
-			SugarBiomeCore core = SugarBiomeCore.getInstance();
-			core.setSugarBlockId(sugarBlockId);
-			core.setSugarBiomeId(sugarBiomeId);
-			core.setReplaceCake(replaceCake);
-			core.setReplaceSponge(replaceSponge);
-			core.run();
-		}
+		
+		SugarBiomeCore core = SugarBiomeCore.getInstance();
+		core.setSugarBiomeId(sugarBiomeId);
+		core.run();
 	}
 }

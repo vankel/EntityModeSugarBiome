@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Yamato
+ * Copyright 2015 Yamato
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.minecraft.src;
+package mod.ymt.sugar;
 
 import java.util.Random;
-import cpw.mods.fml.common.registry.LanguageRegistry;
-import mod.ymt.sugar.SugarBiomeCore;
+import littleMaidMobX.LMM_EntityLittleMaid;
+import littleMaidMobX.LMM_EntityMode_Basic;
+import littleMaidMobX.LMM_EnumSound;
+import littleMaidMobX.LMM_InventoryLittleMaid;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
@@ -59,7 +62,7 @@ public class WacoEntityMode_SugarHunter extends LMM_EntityMode_Basic {
 		if (isModeEnable()) {
 			ItemStack litemstack = owner.maidInventory.getStackInSlot(0);
 			if (litemstack != null) {
-				if (litemstack.itemID == Item.reed.itemID) {
+				if (litemstack.getItem() == Items.reeds) {
 					owner.setMaidMode("SugarHunter");
 					return true;
 				}
@@ -81,9 +84,9 @@ public class WacoEntityMode_SugarHunter extends LMM_EntityMode_Basic {
 		}
 		// サトウキビの探索
 		World w = owner.worldObj;
-		int blockId = w.getBlockId(px, py, pz);
-		if (blockId == Block.reed.blockID) {
-			if (w.getBlockId(px, py - 1, pz) == Block.reed.blockID) {
+		Block block = w.getBlock(px, py, pz);
+		if (block == Blocks.reeds) {
+			if (w.getBlock(px, py - 1, pz) == Blocks.reeds) {
 				SugarBiomeCore.getInstance().logFine("find reed %d, %d, %d", px, py, pz);
 				return true;
 			}
@@ -94,10 +97,10 @@ public class WacoEntityMode_SugarHunter extends LMM_EntityMode_Basic {
 			}
 		}
 		// 植え付け可能場所の探索
-		else if (blockId == Block.dirt.blockID || blockId == Block.grass.blockID || blockId == Block.sand.blockID) {
-			Material mm = w.getBlockMaterial(px, py + 1, pz);
+		else if (block == Blocks.dirt || block == Blocks.grass || block == Blocks.sand) {
+			Material mm = w.getBlock(px, py + 1, pz).getMaterial();
 			if (mm == null || (mm.isReplaceable() && !mm.isLiquid())) {
-				if (Block.reed.canPlaceBlockAt(w, px, py + 1, pz) && owner.maidInventory.hasItem(Item.reed.itemID)) {
+				if (Blocks.reeds.canPlaceBlockAt(w, px, py + 1, pz) && owner.maidInventory.hasItem(Items.reeds)) {
 					SugarBiomeCore.getInstance().logFine("find point %d, %d, %d", px, py, pz);
 					return true;
 				}
@@ -122,26 +125,26 @@ public class WacoEntityMode_SugarHunter extends LMM_EntityMode_Basic {
 			return result;
 		}
 		World w = owner.worldObj;
-		int blockId = w.getBlockId(px, py, pz);
+		Block block = w.getBlock(px, py, pz);
 		
 		// さとうきびの刈り取り
-		if (blockId == Block.reed.blockID && w.getBlockId(px, py - 1, pz) == Block.reed.blockID) {
+		if (block == Blocks.reeds && w.getBlock(px, py - 1, pz) == Blocks.reeds) {
 			owner.setSwing(10, LMM_EnumSound.Null);
-			Block.blocksList[blockId].dropBlockAsItem(w, px, py, pz, 0, 0);
+			block.dropBlockAsItem(w, px, py, pz, 0, 0);
 			w.setBlockToAir(px, py, pz);
-			w.playSoundEffect(px + 0.5F, py + 0.5F, pz + 0.5F, Block.reed.stepSound.getPlaceSound(), (Block.reed.stepSound.getVolume() + 1.0F) / 2.0F,
-					Block.reed.stepSound.getPitch() * 0.8F);
+			w.playSoundEffect(px + 0.5F, py + 0.5F, pz + 0.5F, Blocks.reeds.stepSound.getBreakSound(), (Blocks.reeds.stepSound.getVolume() + 1.0F) / 2.0F,
+					Blocks.reeds.stepSound.getPitch() * 0.8F);
 			coolTime = 10;
 		}
 		// 植え付け
-		else if (blockId == Block.dirt.blockID || blockId == Block.grass.blockID || blockId == Block.sand.blockID) {
-			Material mm = w.getBlockMaterial(px, py + 1, pz);
+		else if (block == Blocks.dirt || block == Blocks.grass || block == Blocks.sand) {
+			Material mm = w.getBlock(px, py + 1, pz).getMaterial();
 			if (mm == null || mm.isReplaceable()) {
-				if (Block.reed.canPlaceBlockAt(w, px, py + 1, pz) && owner.maidInventory.consumeInventoryItem(Item.reed.itemID)) {
-					w.setBlock(px, py + 1, pz, Block.reed.blockID);
+				if (Blocks.reeds.canPlaceBlockAt(w, px, py + 1, pz) && owner.maidInventory.consumeInventoryItem(Items.reeds)) {
+					w.setBlock(px, py + 1, pz, Blocks.reeds);
 					owner.setSwing(10, LMM_EnumSound.Null);
-					w.playSoundEffect(px + 0.5F, py + 0.5F, pz + 0.5F, Block.reed.stepSound.getPlaceSound(), (Block.reed.stepSound.getVolume() + 1.0F) / 2.0F,
-							Block.reed.stepSound.getPitch() * 0.8F);
+					w.playSoundEffect(px + 0.5F, py + 0.5F, pz + 0.5F, Blocks.reeds.stepSound.getBreakSound(),
+							(Blocks.reeds.stepSound.getVolume() + 1.0F) / 2.0F, Blocks.reeds.stepSound.getPitch() * 0.8F);
 				}
 			}
 		}
@@ -151,9 +154,9 @@ public class WacoEntityMode_SugarHunter extends LMM_EntityMode_Basic {
 	@Override
 	public int getNextEquipItem(int pMode) {
 		if (pMode == mmode_SugarHunter) {
-			for (int i = 0; i < owner.maidInventory.maxInventorySize; i++) {
+			for (int i = 0; i < LMM_InventoryLittleMaid.maxInventorySize; i++) {
 				ItemStack item = owner.maidInventory.getStackInSlot(i);
-				if (item != null && item.itemID == Item.reed.itemID) {
+				if (item != null && item.getItem() == Items.reeds) {
 					return i;
 				}
 			}
@@ -163,21 +166,14 @@ public class WacoEntityMode_SugarHunter extends LMM_EntityMode_Basic {
 	
 	@Override
 	public void init() {
-		if (isModeEnable()) {
-			// 登録モードの名称追加
-			LanguageRegistry.instance().addStringLocalization("littleMaidMob.mode.SugarHunter", "SugarHunter");
-			LanguageRegistry.instance().addStringLocalization("littleMaidMob.mode.SugarHunter", "ja_JP", "シュガーハンター");
-			LanguageRegistry.instance().addStringLocalization("littleMaidMob.mode.F-SugarHunter", "F-SugarHunter");
-			LanguageRegistry.instance().addStringLocalization("littleMaidMob.mode.T-SugarHunter", "T-SugarHunter");
-			LanguageRegistry.instance().addStringLocalization("littleMaidMob.mode.D-SugarHunter", "D-SugarHunter");
-		}
+		;
 	}
 	
 	@Override
 	public boolean isSearchBlock() {
 		if (isFullInventory()) {
 			SugarBiomeCore.getInstance().logFine("SearchChest start");
-			owner.aiWander.setEnable(true);	// チェスト探索時には徘徊を許可する
+			owner.aiWander.setEnable(true); // チェスト探索時には徘徊を許可する
 			modeSearchChest = true; // アイテムいっぱいならチェスト探索モード
 			fDistance = 100F; // チェストまでの最大距離
 			return !super.shouldBlock(mmode_Escorter); // ほんとは mytile == null したいけど代用として
@@ -218,7 +214,7 @@ public class WacoEntityMode_SugarHunter extends LMM_EntityMode_Basic {
 		switch (pMode) {
 			case mmode_SugarHunter:
 				owner.setBloodsuck(false);
-				owner.aiWander.setEnable(false);	// デフォルト false
+				owner.aiWander.setEnable(false); // デフォルト false
 				owner.aiJumpTo.setEnable(false);
 				owner.aiFollow.setEnable(false);
 				owner.aiAvoidPlayer.setEnable(false);
