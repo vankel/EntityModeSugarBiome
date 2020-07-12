@@ -13,28 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.minecraft.src;
+package mod.ymt.sugar;
 
 import mod.ymt.cmn.CfgFile;
-import mod.ymt.sugar.SugarBiomeCore;
+import net.minecraft.world.biome.SpawnListEntry;
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
 /**
  * @author Yamato
  *
  */
-public class mod_SugarBiome extends BaseMod {
-	@Override
-	public String getPriorities() {
-		return "required-after:mod_YMTLib";
-	}
-
-	@Override
-	public String getVersion() {
-		return "162v2";
-	}
-
-	@Override
-	public void load() {
+@Mod(modid = "mod.ymt.sugar.SugarBiome", name = "EntityModeSugarBiome", version = "164v2", dependencies = "required-after:mod.ymt.cmn.YMTLib")
+public class SugarBiome {
+	@EventHandler
+	public void preInit(FMLPreInitializationEvent event) {
 		CfgFile cfgFile = new CfgFile("mod_SugarBiome.txt");
 		int sugarBlockId = cfgFile.getInt("sugarBlockId", 203, 0, 255);
 		int sugarBiomeId = cfgFile.getInt("sugarBiomeId", 55, 0, 127);
@@ -51,9 +45,5 @@ public class mod_SugarBiome extends BaseMod {
 			core.setReplaceSponge(replaceSponge);
 			core.run();
 		}
-	}
-
-	public static SpawnListEntry copySpawnListEntry(SpawnListEntry ent) {
-		return new SpawnListEntry(ent.entityClass, ent.itemWeight, ent.minGroupCount, ent.maxGroupCount);
 	}
 }

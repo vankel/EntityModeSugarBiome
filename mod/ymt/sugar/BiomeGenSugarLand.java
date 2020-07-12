@@ -17,12 +17,12 @@ package mod.ymt.sugar;
 
 import java.util.List;
 import java.util.Random;
-import net.minecraft.src.BiomeDecorator;
-import net.minecraft.src.BiomeGenBase;
-import net.minecraft.src.Block;
-import net.minecraft.src.EnumCreatureType;
-import net.minecraft.src.SpawnListEntry;
-import net.minecraft.src.World;
+import net.minecraft.block.Block;
+import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeDecorator;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.SpawnListEntry;
 
 /**
  * @author Yamato
@@ -43,7 +43,7 @@ public class BiomeGenSugarLand extends BiomeGenBase {
 	@Override
 	public void decorate(World world, Random rand, int x, int z) {
 		super.decorate(world, rand, x, z);
-		// ƒGƒƒ‰ƒ‹ƒh¶¬
+		// ã‚¨ãƒ¡ãƒ©ãƒ«ãƒ‰ç”Ÿæˆ
 		int chance = 3 + rand.nextInt(6);
 		for (int i = 0; i < chance; i++) {
 			int posX = x + rand.nextInt(16);
@@ -60,14 +60,14 @@ public class BiomeGenSugarLand extends BiomeGenBase {
 		synchronized (this) {
 			if (type == EnumCreatureType.creature && !initializedSpawnList) {
 				initializedSpawnList = true;
-				SugarBiomeCore.getInstance().debugPrint("SpawnableList(Creature) initialize");
-				// ƒƒCƒh‚³‚ñ’Ç‰Á
+				SugarBiomeCore.getInstance().logFine("SpawnableList(Creature) initialize");
+				// ãƒ¡ã‚¤ãƒ‰ã•ã‚“è¿½åŠ 
 				for (Object obj: BiomeGenBase.plains.getSpawnableList(EnumCreatureType.creature)) {
 					if (obj instanceof SpawnListEntry) {
 						SpawnListEntry ent = (SpawnListEntry) obj;
 						if ("LMM_EntityLittleMaid".equals(ent.entityClass.getSimpleName())) {
-							SugarBiomeCore.getInstance().debugPrint("find littleMaidMob!");
-							spawnableCreatureList.add(SugarBiomeCore.getInstance().copySpawnListEntry(ent));
+							SugarBiomeCore.getInstance().logFine("find littleMaidMob!");
+							spawnableCreatureList.add(new SpawnListEntry(ent.entityClass, ent.itemWeight, ent.minGroupCount, ent.maxGroupCount));
 						}
 					}
 				}
@@ -77,7 +77,7 @@ public class BiomeGenSugarLand extends BiomeGenBase {
 	}
 
 	@Override
-	protected BiomeDecorator createBiomeDecorator() {
+	public BiomeDecorator createBiomeDecorator() {
 		return new BiomeSugarDecorator(this);
 	}
 

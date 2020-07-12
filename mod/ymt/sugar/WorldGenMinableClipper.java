@@ -16,8 +16,8 @@
 package mod.ymt.sugar;
 
 import java.util.Random;
-import net.minecraft.src.World;
-import net.minecraft.src.WorldGenerator;
+import net.minecraft.world.World;
+import net.minecraft.world.gen.feature.WorldGenerator;
 
 /**
  * @author Yamato

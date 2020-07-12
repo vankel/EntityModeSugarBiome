@@ -22,14 +22,13 @@ import mod.ymt.cmn.ItemWithMetadata;
 import mod.ymt.cmn.NekonoteCore;
 import mod.ymt.cmn.Reflection;
 import mod.ymt.cmn.Utils;
-import net.minecraft.src.Block;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemSpade;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.ItemTool;
-import net.minecraft.src.ModLoader;
-import net.minecraft.src.SpawnListEntry;
-import net.minecraft.src.mod_SugarBiome;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemSpade;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemTool;
+import net.minecraft.world.biome.SpawnListEntry;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 /**
  * @author Yamato
@@ -46,10 +45,6 @@ public class SugarBiomeCore extends NekonoteCore {
 		;
 	}
 
-	public SpawnListEntry copySpawnListEntry(SpawnListEntry ent) {
-		return mod_SugarBiome.copySpawnListEntry(ent);
-	}
-
 	public int getSugarBiomeId() {
 		return sugarBiomeId;
 	}
@@ -62,25 +57,25 @@ public class SugarBiomeCore extends NekonoteCore {
 	public void init() {
 		Block sugarBlock = null;
 		if (0 < sugarBlockId) {
-			// »“œƒuƒƒbƒN
+			// ç ‚ç³–ãƒ–ãƒ­ãƒƒã‚¯
 			sugarBlock = new BlockSugar(sugarBlockId).setUnlocalizedName("SugarBlock");
-			ModLoader.registerBlock(sugarBlock, ItemWithMetadata.class);
-			Utils.addName(sugarBlock, "SugarBlock", "»“œƒuƒƒbƒN");
-			Utils.addName(new ItemStack(sugarBlock, 0, 0), "SugarBlock", "»“œƒuƒƒbƒN"); // “V‘R»“œƒuƒƒbƒN
-			Utils.addName(new ItemStack(sugarBlock, 0, 1), "SugarBlock", "»“œƒuƒƒbƒN"); // lH»“œƒuƒƒbƒN
+			GameRegistry.registerBlock(sugarBlock, ItemWithMetadata.class, "blockSugar");
+			Utils.addName(sugarBlock, "SugarBlock", "ç ‚ç³–ãƒ–ãƒ­ãƒƒã‚¯");
+			Utils.addName(new ItemStack(sugarBlock, 0, 0), "SugarBlock", "ç ‚ç³–ãƒ–ãƒ­ãƒƒã‚¯"); // å¤©ç„¶ç ‚ç³–ãƒ–ãƒ­ãƒƒã‚¯
+			Utils.addName(new ItemStack(sugarBlock, 0, 1), "SugarBlock", "ç ‚ç³–ãƒ–ãƒ­ãƒƒã‚¯"); // äººå·¥ç ‚ç³–ãƒ–ãƒ­ãƒƒã‚¯
 
-			// »“œ¨»“œƒuƒƒbƒN(lH)
-			ModLoader.addRecipe(new ItemStack(sugarBlock, 1, 1), new Object[]{
+			// ç ‚ç³–â†’ç ‚ç³–ãƒ–ãƒ­ãƒƒã‚¯(äººå·¥)
+			GameRegistry.addRecipe(new ItemStack(sugarBlock, 1, 1), new Object[]{
 				"XX", "XX", 'X', Item.sugar
 			});
-			// »“œƒuƒƒbƒN¨»“œ
-			ModLoader.addRecipe(new ItemStack(Item.sugar, 4, 0), new Object[]{
+			// ç ‚ç³–ãƒ–ãƒ­ãƒƒã‚¯â†’ç ‚ç³–
+			GameRegistry.addRecipe(new ItemStack(Item.sugar, 4, 0), new Object[]{
 				"X", 'X', sugarBlock
 			});
 
-			// »“œƒuƒƒbƒN‚ÍƒXƒRƒbƒv‚Å‰ó‚µ‚â‚·‚¢
+			// ç ‚ç³–ãƒ–ãƒ­ãƒƒã‚¯ã¯ã‚¹ã‚³ãƒƒãƒ—ã§å£Šã—ã‚„ã™ã„
 			try {
-				Block[] old_blocks = (Block[]) ModLoader.getPrivateValue(ItemSpade.class, null, 0);
+				Block[] old_blocks = ItemSpade.blocksEffectiveAgainst;
 				List<Block> list = new ArrayList<Block>(Arrays.asList(old_blocks));
 				list.add(sugarBlock);
 				Block[] new_blocks = list.toArray(new Block[0]);
@@ -90,51 +85,51 @@ public class SugarBiomeCore extends NekonoteCore {
 				}
 			}
 			catch (Exception ex) {
-				debugPrint(ex, "blocksEffectiveAgainst set failed");
+				logFine(ex, "blocksEffectiveAgainst set failed");
 			}
 		}
 		if (sugarBlock != null && 0 < sugarBiomeId) {
-			// »“œƒoƒCƒI[ƒ€
+			// ç ‚ç³–ãƒã‚¤ã‚ªãƒ¼ãƒ 
 			BiomeGenSugarLand biome = new BiomeGenSugarLand(sugarBiomeId, sugarBlock.blockID);
-			ModLoader.addBiome(biome);
+			GameRegistry.addBiome(biome);
 		}
 
-		// ƒP[ƒL·‚µ‘Ö‚¦
+		// ã‚±ãƒ¼ã‚­å·®ã—æ›¿ãˆ
 		if (replaceCake) {
 			Block.blocksList[Block.cake.blockID] = null;
 			Block newCake = new BlockCake2(Block.cake.blockID);
-			ModLoader.registerBlock(newCake, ItemWithMetadata.class);
-			Utils.addName(newCake, "Cake", "ƒP[ƒL");
-			Utils.addName(new ItemStack(newCake, 0, 0), "Cake", "ƒP[ƒL");
-			Utils.addName(new ItemStack(newCake, 0, 1), "half-eaten Cake", "H‚×‚©‚¯‚ÌƒP[ƒL");
-			Utils.addName(new ItemStack(newCake, 0, 2), "half-eaten Cake", "H‚×‚©‚¯‚ÌƒP[ƒL");
-			Utils.addName(new ItemStack(newCake, 0, 3), "half-eaten Cake", "H‚×‚©‚¯‚ÌƒP[ƒL");
-			Utils.addName(new ItemStack(newCake, 0, 4), "half-eaten Cake", "H‚×‚©‚¯‚ÌƒP[ƒL");
-			Utils.addName(new ItemStack(newCake, 0, 5), "half-eaten Cake", "H‚×‚©‚¯‚ÌƒP[ƒL");
-			Utils.addName(new ItemStack(newCake, 0, 6), "half-eaten Cake", "H‚×‚©‚¯‚ÌƒP[ƒL");
+			GameRegistry.registerBlock(newCake, ItemWithMetadata.class, "blockCake");
+			Utils.addName(newCake, "Cake", "ã‚±ãƒ¼ã‚­");
+			Utils.addName(new ItemStack(newCake, 0, 0), "Cake", "ã‚±ãƒ¼ã‚­");
+			Utils.addName(new ItemStack(newCake, 0, 1), "half-eaten Cake", "é£Ÿã¹ã‹ã‘ã®ã‚±ãƒ¼ã‚­");
+			Utils.addName(new ItemStack(newCake, 0, 2), "half-eaten Cake", "é£Ÿã¹ã‹ã‘ã®ã‚±ãƒ¼ã‚­");
+			Utils.addName(new ItemStack(newCake, 0, 3), "half-eaten Cake", "é£Ÿã¹ã‹ã‘ã®ã‚±ãƒ¼ã‚­");
+			Utils.addName(new ItemStack(newCake, 0, 4), "half-eaten Cake", "é£Ÿã¹ã‹ã‘ã®ã‚±ãƒ¼ã‚­");
+			Utils.addName(new ItemStack(newCake, 0, 5), "half-eaten Cake", "é£Ÿã¹ã‹ã‘ã®ã‚±ãƒ¼ã‚­");
+			Utils.addName(new ItemStack(newCake, 0, 6), "half-eaten Cake", "é£Ÿã¹ã‹ã‘ã®ã‚±ãƒ¼ã‚­");
 			try {
 				Reflection.replaceFieldValues(Block.class, null, Block.cake, newCake);
-				// Item.cake ‚Í’u‚«Š·‚¦‚È‚¢
+				// Item.cake ã¯ç½®ãæ›ãˆãªã„
 			}
 			catch (Exception e) {
-				debugPrint(e, "replaceFieldValues cake");
+				logFine(e, "replaceFieldValues cake");
 			}
 		}
 
-		// ƒXƒ|ƒ“ƒW·‚µ‘Ö‚¦
+		// ã‚¹ãƒãƒ³ã‚¸å·®ã—æ›¿ãˆ
 		if (replaceSponge) {
 			Block.blocksList[Block.sponge.blockID] = null;
 			Block newSponge = new BlockSponge2(Block.sponge.blockID);
-			ModLoader.registerBlock(newSponge);
-			Utils.addName(newSponge, "Sponge", "ƒXƒ|ƒ“ƒW");
-			Utils.addName(new ItemStack(newSponge, 0, 0), "Sponge", "ƒXƒ|ƒ“ƒW");
+			GameRegistry.registerBlock(newSponge, "blockSponge");
+			Utils.addName(newSponge, "Sponge", "ã‚¹ãƒãƒ³ã‚¸");
+			Utils.addName(new ItemStack(newSponge, 0, 0), "Sponge", "ã‚¹ãƒãƒ³ã‚¸");
 			try {
 				Reflection.replaceFieldValues(Block.class, null, Block.sponge, newSponge);
 			}
 			catch (Exception e) {
-				debugPrint(e, "replaceFieldValues sponge");
+				logFine(e, "replaceFieldValues sponge");
 			}
-			ModLoader.addRecipe(new ItemStack(Block.sponge, 1, 0), new Object[]{
+			GameRegistry.addRecipe(new ItemStack(Block.sponge, 1, 0), new Object[]{
 				"X X", " X ", "X X", 'X', Block.cloth
 			});
 		}

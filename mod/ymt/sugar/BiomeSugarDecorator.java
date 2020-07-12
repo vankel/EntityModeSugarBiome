@@ -15,12 +15,12 @@
  */
 package mod.ymt.sugar;
 
-import net.minecraft.src.BiomeDecorator;
-import net.minecraft.src.BiomeGenBase;
-import net.minecraft.src.Block;
-import net.minecraft.src.World;
-import net.minecraft.src.WorldGenMinable;
-import net.minecraft.src.WorldGenerator;
+import net.minecraft.block.Block;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeDecorator;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.gen.feature.WorldGenMinable;
+import net.minecraft.world.gen.feature.WorldGenerator;
 
 public class BiomeSugarDecorator extends BiomeDecorator {
 	private final WorldGenerator voidGen;
@@ -32,11 +32,11 @@ public class BiomeSugarDecorator extends BiomeDecorator {
 
 	public BiomeSugarDecorator(BiomeGenBase owner) {
 		super(owner);
-		this.voidGen = new WorldGenMinable(0, 10); // ‹óŠÔ¶¬
-		this.sugarGen = new WorldGenMinable(sugarBlockId, 32); // »“œƒuƒƒbƒN¶¬
+		this.voidGen = new WorldGenMinable(0, 10); // ç©ºé–“ç”Ÿæˆ
+		this.sugarGen = new WorldGenMinable(sugarBlockId, 32); // ç ‚ç³–ãƒ–ãƒ­ãƒƒã‚¯ç”Ÿæˆ
 		this.cakeGen = new WorldGenCakeForSugarLand();
 		this.reedGen = new WorldGenReedForSugarLand();
-		this.ironGen = new WorldGenMinableClipper(this.ironGen, 0, 48); // “S‚Ì¶¬”ÍˆÍ‚ğ 0 ` 48 ‚É§ŒÀ
+		this.ironGen = new WorldGenMinableClipper(this.ironGen, 0, 48); // é‰„ã®ç”Ÿæˆç¯„å›²ã‚’ 0 ï½ 48 ã«åˆ¶é™
 		this.waterlilyPerChunk = 4;
 		this.treesPerChunk = -9999;
 		this.flowersPerChunk = -9999;
@@ -53,7 +53,7 @@ public class BiomeSugarDecorator extends BiomeDecorator {
 	@Override
 	protected void decorate() {
 		super.decorate();
-		// •\‘w‚ÌÎ‚ğ»“œ‚É’u‚«Š·‚¦
+		// è¡¨å±¤ã®çŸ³ã‚’ç ‚ç³–ã«ç½®ãæ›ãˆ
 		World world = this.currentWorld;
 		for (int x = 0; x < 16; x++) {
 			for (int z = 0; z < 16; z++) {
@@ -71,7 +71,7 @@ public class BiomeSugarDecorator extends BiomeDecorator {
 				}
 			}
 		}
-		// ƒP[ƒL——§
+		// ã‚±ãƒ¼ã‚­ä¹±ç«‹
 		for (int i = 0; i < 8; i++) {
 			int x = this.chunk_X + this.randomGenerator.nextInt(16);
 			int y = this.randomGenerator.nextInt(120) + 8;

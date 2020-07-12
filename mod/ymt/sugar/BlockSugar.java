@@ -17,17 +17,18 @@ package mod.ymt.sugar;
 
 import java.util.Random;
 import mod.ymt.cmn.Utils;
-import net.minecraft.src.Block;
-import net.minecraft.src.BlockSand;
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityList;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.IconRegister;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.MapColor;
-import net.minecraft.src.Material;
-import net.minecraft.src.World;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockSand;
+import net.minecraft.block.material.MapColor;
+import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 /**
  * @author Yamato
@@ -35,7 +36,7 @@ import net.minecraft.src.World;
  */
 public class BlockSugar extends BlockSand {
 	private static final boolean ENABLE_SPAWNMAID = false;
-	private static final int ENTITY_LIMIT = 512; // …‚ÉG‚ê‚½Û‚É»“œ‚ğ¶¬‚·‚é‚©‚Ç‚¤‚©‚ÌƒGƒ“ƒeƒBƒeƒBŒÀŠE’l
+	private static final int ENTITY_LIMIT = 512; // æ°´ã«è§¦ã‚ŒãŸéš›ã«ç ‚ç³–ã‚’ç”Ÿæˆã™ã‚‹ã‹ã©ã†ã‹ã®ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£é™ç•Œå€¤
 	private static final Material sugarMaterial = new Material(MapColor.snowColor);
 
 	private final SugarBiomeCore core = SugarBiomeCore.getInstance();
@@ -44,11 +45,12 @@ public class BlockSugar extends BlockSand {
 		super(blockId, sugarMaterial);
 		setHardness(0.5F);
 		setStepSound(soundSandFootstep);
+        this.setCreativeTab(CreativeTabs.tabBlock);
 	}
 
 	@Override
 	public int damageDropped(int metadata) {
-		return 0; // Item.sugar ‚Ì metadata = 0
+		return 0; // Item.sugar ã® metadata = 0
 	}
 
 	@Override
@@ -56,7 +58,7 @@ public class BlockSugar extends BlockSand {
 		if (!world.isRemote) {
 			int quantity = quantityDroppedWithBonus(fortune, world.rand);
 			if (!isNatureSugar(metadata)) {
-				quantity = Math.min(quantity, 4); // lH»“œ‚ÍÅ‘åƒhƒƒbƒv”4ŒÂ
+				quantity = Math.min(quantity, 4); // äººå·¥ç ‚ç³–ã¯æœ€å¤§ãƒ‰ãƒ­ãƒƒãƒ—æ•°4å€‹
 			}
 			for (int i = 0; i < quantity; i++) {
 				if (world.rand.nextFloat() <= probability) {
@@ -70,7 +72,7 @@ public class BlockSugar extends BlockSand {
 	}
 
 	@Override
-	public boolean func_82506_l() { // scheduledUpdatesAreImmediate ‚ğ‹Ö~
+	public boolean func_82506_l() { // scheduledUpdatesAreImmediate ã‚’ç¦æ­¢
 		return false;
 	}
 
@@ -87,7 +89,7 @@ public class BlockSugar extends BlockSand {
 	public void onNeighborBlockChange(World world, int x, int y, int z, int changedBlockId) {
 		if (isTouchWater(world, x, y, z)) {
 			if (Utils.isServerSide(world)) {
-				if (world.loadedEntityList.size() < ENTITY_LIMIT) { // ƒGƒ“ƒeƒBƒeƒB”‚ªˆê’èˆÈã‚Ì‚É‚Í»“œ‚ğ¶¬‚µ‚È‚¢
+				if (world.loadedEntityList.size() < ENTITY_LIMIT) { // ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£æ•°ãŒä¸€å®šä»¥ä¸Šã®æ™‚ã«ã¯ç ‚ç³–ã‚’ç”Ÿæˆã—ãªã„
 					int cnt = world.rand.nextInt(2);
 					if (0 < cnt) {
 						int meta = world.getBlockMetadata(x, y, z);
@@ -104,11 +106,11 @@ public class BlockSugar extends BlockSand {
 				if (Utils.isServerSide(world)) {
 					Entity ent = EntityList.createEntityByName("LittleMaid", world);
 					if (ent instanceof EntityLiving) {
-						// ƒƒCƒh‚³‚ñƒXƒ|[ƒ“
+						// ãƒ¡ã‚¤ãƒ‰ã•ã‚“ã‚¹ãƒãƒ¼ãƒ³
 						EntityLiving living = (EntityLiving) ent;
 						living.setLocationAndAngles(x + 0.5, y + 0.5, z + 0.5, world.rand.nextFloat() * 360.0F, 0.0F);
 						if (world.spawnEntityInWorld(living)) {
-							// ƒuƒƒbƒNÁ‹
+							// ãƒ–ãƒ­ãƒƒã‚¯æ¶ˆå»
 							world.setBlockToAir(x, y, z);
 							world.setBlockToAir(x, y + 1, z);
 						}
@@ -160,11 +162,11 @@ public class BlockSugar extends BlockSand {
 			return false;
 		int meta = world.getBlockMetadata(x, y, z);
 		if (ignoreUnderFlow && 8 <= meta)
-			return false; // ƒuƒƒbƒN‰¡‚Ì‰ºŒü‚«…—¬‚ÍƒZ[ƒt
+			return false; // ãƒ–ãƒ­ãƒƒã‚¯æ¨ªã®ä¸‹å‘ãæ°´æµã¯ã‚»ãƒ¼ãƒ•
 		if (meta == 0)
-			return false; // …Œ¹‚ÍƒZ[ƒt
+			return false; // æ°´æºã¯ã‚»ãƒ¼ãƒ•
 		if (meta == 7)
-			return false; // ’·‚³ 7 ‚Ì—×‚ÍƒZ[ƒt
+			return false; // é•·ã• 7 ã®éš£ã¯ã‚»ãƒ¼ãƒ•
 		return true;
 	}
 }

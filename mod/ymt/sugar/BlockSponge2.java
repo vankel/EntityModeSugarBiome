@@ -19,9 +19,9 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import mod.ymt.cmn.Coord3D;
-import net.minecraft.src.BlockSponge;
-import net.minecraft.src.Material;
-import net.minecraft.src.World;
+import net.minecraft.block.BlockSponge;
+import net.minecraft.block.material.Material;
+import net.minecraft.world.World;
 
 /**
  * @author Yamato
@@ -33,7 +33,7 @@ public class BlockSponge2 extends BlockSponge {
 		setHardness(0.6F);
 		setStepSound(soundClothFootstep);
 		setUnlocalizedName("sponge");
-		func_111022_d("sponge");
+		setTextureName("sponge");
 	}
 
 	@Override
@@ -80,6 +80,6 @@ public class BlockSponge2 extends BlockSponge {
 
 	private boolean isLiquid(World world, int x, int y, int z) {
 		Material material = world.getBlockMaterial(x, y, z);
-		return material != null && material.isLiquid() && material == Material.water; // ƒ}ƒOƒ}‚Í‹z…‚Å‚«‚È‚¢
+		return material != null && material.isLiquid() && material == Material.water; // ãƒã‚°ãƒã¯å¸æ°´ã§ããªã„
 	}
 }

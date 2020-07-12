@@ -16,10 +16,10 @@
 package mod.ymt.sugar;
 
 import java.util.Random;
-import net.minecraft.src.Block;
-import net.minecraft.src.Material;
-import net.minecraft.src.World;
-import net.minecraft.src.WorldGenReed;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.world.World;
+import net.minecraft.world.gen.feature.WorldGenReed;
 
 public class WorldGenReedForSugarLand extends WorldGenReed {
 	private final SugarBiomeCore core = SugarBiomeCore.getInstance();

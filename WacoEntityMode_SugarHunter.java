@@ -16,7 +16,15 @@
 package net.minecraft.src;
 
 import java.util.Random;
+import cpw.mods.fml.common.registry.LanguageRegistry;
 import mod.ymt.sugar.SugarBiomeCore;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.entity.ai.EntityAITasks;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 /**
  * @author Yamato
@@ -27,18 +35,15 @@ public class WacoEntityMode_SugarHunter extends LMM_EntityMode_Basic {
 	private final Random rand = new Random();
 	private boolean modeSearchChest = false;
 	private int coolTime = 0;
-	private boolean speedUp = false;
-	private double lastdistance = 0;
-	private int moveRetryCount = 0;
-
+	
 	static {
 		System.out.println("initializing WacoEntityMode_SugarHunter");
 	}
-
+	
 	public WacoEntityMode_SugarHunter(LMM_EntityLittleMaid owner) {
 		super(owner);
 	}
-
+	
 	@Override
 	public void addEntityMode(EntityAITasks pDefaultMove, EntityAITasks pDefaultTargeting) {
 		if (isModeEnable()) {
@@ -48,7 +53,7 @@ public class WacoEntityMode_SugarHunter extends LMM_EntityMode_Basic {
 			owner.addMaidMode(ltasks, "SugarHunter", mmode_SugarHunter);
 		}
 	}
-
+	
 	@Override
 	public boolean changeMode(EntityPlayer pentityplayer) {
 		if (isModeEnable()) {
@@ -62,7 +67,7 @@ public class WacoEntityMode_SugarHunter extends LMM_EntityMode_Basic {
 		}
 		return false;
 	}
-
+	
 	@Override
 	public boolean checkBlock(int pMode, int px, int py, int pz) {
 		if (modeSearchChest) {
@@ -74,54 +79,52 @@ public class WacoEntityMode_SugarHunter extends LMM_EntityMode_Basic {
 				return false;
 			}
 		}
-		// ƒTƒgƒEƒLƒr‚Ì’Tõ
+		// ã‚µãƒˆã‚¦ã‚­ãƒ“ã®æ¢ç´¢
 		World w = owner.worldObj;
 		int blockId = w.getBlockId(px, py, pz);
 		if (blockId == Block.reed.blockID) {
 			if (w.getBlockId(px, py - 1, pz) == Block.reed.blockID) {
-				speedUp = true;
-				SugarBiomeCore.getInstance().debugPrint("find reed %d, %d, %d", px, py, pz);
+				SugarBiomeCore.getInstance().logFine("find reed %d, %d, %d", px, py, pz);
 				return true;
 			}
-			// L‚Ñ‚Ä‚¢‚È‚¯‚ê‚Î—£‚ê‚½êŠ‚ÉˆÚ“®‚µ‚Ä‚İ‚é
+			// ä¼¸ã³ã¦ã„ãªã‘ã‚Œã°é›¢ã‚ŒãŸå ´æ‰€ã«ç§»å‹•ã—ã¦ã¿ã‚‹
 			if (rand.nextInt(600) == 0 && 5 * 5 < owner.getDistanceSq(px + 0.5, py + 0.5, pz + 0.5)) {
-				SugarBiomeCore.getInstance().debugPrint("move far %d, %d, %d", px, py, pz);
+				SugarBiomeCore.getInstance().logFine("move far %d, %d, %d", px, py, pz);
 				return true;
 			}
 		}
-		// A‚¦•t‚¯‰Â”\êŠ‚Ì’Tõ
+		// æ¤ãˆä»˜ã‘å¯èƒ½å ´æ‰€ã®æ¢ç´¢
 		else if (blockId == Block.dirt.blockID || blockId == Block.grass.blockID || blockId == Block.sand.blockID) {
 			Material mm = w.getBlockMaterial(px, py + 1, pz);
 			if (mm == null || (mm.isReplaceable() && !mm.isLiquid())) {
 				if (Block.reed.canPlaceBlockAt(w, px, py + 1, pz) && owner.maidInventory.hasItem(Item.reed.itemID)) {
-					speedUp = 2 * 2 < owner.getDistanceSq(px + 0.5, py + 0.5, pz + 0.5);
-					SugarBiomeCore.getInstance().debugPrint("find point %d, %d, %d", px, py, pz);
+					SugarBiomeCore.getInstance().logFine("find point %d, %d, %d", px, py, pz);
 					return true;
 				}
 			}
 		}
 		return false;
 	}
-
+	
 	@Override
 	public boolean checkItemStack(ItemStack pItemStack) {
-		return true; // ƒCƒ“ƒxƒ“ƒgƒŠ‚É‹ó‚«‚ª‚ ‚ê‚ÎƒAƒCƒeƒ€‚ÍE‚¢‚És‚­B‚¯‚Ç AICollectItem “à‚Å‚à”»’è‚µ‚Ä‚¢‚é‚İ‚½‚¢
+		return true; // ã‚¤ãƒ³ãƒ™ãƒ³ãƒˆãƒªã«ç©ºããŒã‚ã‚Œã°ã‚¢ã‚¤ãƒ†ãƒ ã¯æ‹¾ã„ã«è¡Œãã€‚ã‘ã© AICollectItem å†…ã§ã‚‚åˆ¤å®šã—ã¦ã„ã‚‹ã¿ãŸã„
 	}
-
+	
 	@Override
 	public boolean executeBlock(int pMode, int px, int py, int pz) {
 		if (modeSearchChest) {
 			boolean result = super.executeBlock(pMode, px, py, pz);
 			if (!result) {
-				SugarBiomeCore.getInstance().debugPrint("SearchChest finish");
+				SugarBiomeCore.getInstance().logFine("SearchChest finish");
 				modeSearchChest = false;
 			}
 			return result;
 		}
 		World w = owner.worldObj;
 		int blockId = w.getBlockId(px, py, pz);
-
-		// ‚³‚Æ‚¤‚«‚Ñ‚ÌŠ ‚èæ‚è
+		
+		// ã•ã¨ã†ãã³ã®åˆˆã‚Šå–ã‚Š
 		if (blockId == Block.reed.blockID && w.getBlockId(px, py - 1, pz) == Block.reed.blockID) {
 			owner.setSwing(10, LMM_EnumSound.Null);
 			Block.blocksList[blockId].dropBlockAsItem(w, px, py, pz, 0, 0);
@@ -129,9 +132,8 @@ public class WacoEntityMode_SugarHunter extends LMM_EntityMode_Basic {
 			w.playSoundEffect(px + 0.5F, py + 0.5F, pz + 0.5F, Block.reed.stepSound.getPlaceSound(), (Block.reed.stepSound.getVolume() + 1.0F) / 2.0F,
 					Block.reed.stepSound.getPitch() * 0.8F);
 			coolTime = 10;
-			speedUp = false;
 		}
-		// A‚¦•t‚¯
+		// æ¤ãˆä»˜ã‘
 		else if (blockId == Block.dirt.blockID || blockId == Block.grass.blockID || blockId == Block.sand.blockID) {
 			Material mm = w.getBlockMaterial(px, py + 1, pz);
 			if (mm == null || mm.isReplaceable()) {
@@ -145,7 +147,7 @@ public class WacoEntityMode_SugarHunter extends LMM_EntityMode_Basic {
 		}
 		return false;
 	}
-
+	
 	@Override
 	public int getNextEquipItem(int pMode) {
 		if (pMode == mmode_SugarHunter) {
@@ -158,33 +160,34 @@ public class WacoEntityMode_SugarHunter extends LMM_EntityMode_Basic {
 		}
 		return -1;
 	}
-
+	
 	@Override
 	public void init() {
 		if (isModeEnable()) {
-			// “o˜^ƒ‚[ƒh‚Ì–¼Ì’Ç‰Á
-			ModLoader.addLocalization("littleMaidMob.mode.SugarHunter", "SugarHunter");
-			ModLoader.addLocalization("littleMaidMob.mode.SugarHunter", "ja_JP", "ƒVƒ…ƒK[ƒnƒ“ƒ^[");
-			ModLoader.addLocalization("littleMaidMob.mode.F-SugarHunter", "F-SugarHunter");
-			ModLoader.addLocalization("littleMaidMob.mode.T-SugarHunter", "T-SugarHunter");
-			ModLoader.addLocalization("littleMaidMob.mode.D-SugarHunter", "D-SugarHunter");
+			// ç™»éŒ²ãƒ¢ãƒ¼ãƒ‰ã®åç§°è¿½åŠ 
+			LanguageRegistry.instance().addStringLocalization("littleMaidMob.mode.SugarHunter", "SugarHunter");
+			LanguageRegistry.instance().addStringLocalization("littleMaidMob.mode.SugarHunter", "ja_JP", "ã‚·ãƒ¥ã‚¬ãƒ¼ãƒãƒ³ã‚¿ãƒ¼");
+			LanguageRegistry.instance().addStringLocalization("littleMaidMob.mode.F-SugarHunter", "F-SugarHunter");
+			LanguageRegistry.instance().addStringLocalization("littleMaidMob.mode.T-SugarHunter", "T-SugarHunter");
+			LanguageRegistry.instance().addStringLocalization("littleMaidMob.mode.D-SugarHunter", "D-SugarHunter");
 		}
 	}
-
+	
 	@Override
 	public boolean isSearchBlock() {
 		if (isFullInventory()) {
-			SugarBiomeCore.getInstance().debugPrint("SearchChest start");
-			modeSearchChest = true; // ƒAƒCƒeƒ€‚¢‚Á‚Ï‚¢‚È‚çƒ`ƒFƒXƒg’Tõƒ‚[ƒh
-			fDistance = 100F; // ƒ`ƒFƒXƒg‚Ü‚Å‚ÌÅ‘å‹——£
-			return !super.shouldBlock(mmode_Escorter); // ‚Ù‚ñ‚Æ‚Í mytile == null ‚µ‚½‚¢‚¯‚Ç‘ã—p‚Æ‚µ‚Ä
+			SugarBiomeCore.getInstance().logFine("SearchChest start");
+			owner.aiWander.setEnable(true);	// ãƒã‚§ã‚¹ãƒˆæ¢ç´¢æ™‚ã«ã¯å¾˜å¾Šã‚’è¨±å¯ã™ã‚‹
+			modeSearchChest = true; // ã‚¢ã‚¤ãƒ†ãƒ ã„ã£ã±ã„ãªã‚‰ãƒã‚§ã‚¹ãƒˆæ¢ç´¢ãƒ¢ãƒ¼ãƒ‰
+			fDistance = 100F; // ãƒã‚§ã‚¹ãƒˆã¾ã§ã®æœ€å¤§è·é›¢
+			return !super.shouldBlock(mmode_Escorter); // ã»ã‚“ã¨ã¯ mytile == null ã—ãŸã„ã‘ã©ä»£ç”¨ã¨ã—ã¦
 		}
 		if (0 < coolTime) {
-			return false; // ƒN[ƒ‹ƒ^ƒCƒ€’†‚Í—§‚¿~‚Ü‚é
+			return false; // ã‚¯ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ ä¸­ã¯ç«‹ã¡æ­¢ã¾ã‚‹
 		}
-		return true; // ƒTƒgƒEƒLƒr’Tõ
+		return true; // ã‚µãƒˆã‚¦ã‚­ãƒ“æ¢ç´¢
 	}
-
+	
 	@Override
 	public void onUpdate(int pMode) {
 		super.onUpdate(pMode);
@@ -192,7 +195,7 @@ public class WacoEntityMode_SugarHunter extends LMM_EntityMode_Basic {
 			coolTime--;
 		}
 	}
-
+	
 	@Override
 	public boolean outrangeBlock(int pMode, int pX, int pY, int pZ) {
 		if (modeSearchChest) {
@@ -200,38 +203,22 @@ public class WacoEntityMode_SugarHunter extends LMM_EntityMode_Basic {
 		}
 		boolean result = false;
 		if (!owner.isMaidWaitEx()) {
-			double distance = owner.getDistanceSq(pX + 0.5, pY + 0.5, pZ + 0.5);
-			if (distance == lastdistance) {
-				owner.updateWanderPath();
-				SugarBiomeCore.getInstance().debugPrint("updateWanderPath(%s)", ++moveRetryCount);
-				result = moveRetryCount < 40; // 40‰ñ‚Ü‚ÅƒŠƒgƒ‰ƒC‰Â”\
-			}
-			else {
-				result = owner.getNavigator().tryMoveToXYZ(pX, pY, pZ, 1.0);
-			}
-			lastdistance = distance;
+			result = owner.getNavigator().tryMoveToXYZ(pX, pY, pZ, 1.0);
 		}
 		return result;
 	}
-
+	
 	@Override
 	public int priority() {
-		return 5999;	// IC2‚¾‚ÆƒTƒgƒEƒLƒr‚ª”R‚¦‚é‚æ‚¤‚É‚È‚é‚Ì‚ÅALMM_EntityMode_Cooking ‚æ‚è—Dæ“x‚ğã‚°‚é
+		return 5999; // IC2ã ã¨ã‚µãƒˆã‚¦ã‚­ãƒ“ãŒç‡ƒãˆã‚‹ã‚ˆã†ã«ãªã‚‹ã®ã§ã€LMM_EntityMode_Cooking ã‚ˆã‚Šå„ªå…ˆåº¦ã‚’ä¸Šã’ã‚‹
 	}
-
-	@Override
-	public void resetBlock(int pMode) {
-		super.resetBlock(pMode);
-		speedUp = false;
-		moveRetryCount = 0;
-	}
-
+	
 	@Override
 	public boolean setMode(int pMode) {
 		switch (pMode) {
 			case mmode_SugarHunter:
 				owner.setBloodsuck(false);
-				owner.aiWander.setEnable(true);
+				owner.aiWander.setEnable(false);	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ false
 				owner.aiJumpTo.setEnable(false);
 				owner.aiFollow.setEnable(false);
 				owner.aiAvoidPlayer.setEnable(false);
@@ -239,7 +226,7 @@ public class WacoEntityMode_SugarHunter extends LMM_EntityMode_Basic {
 		}
 		return false;
 	}
-
+	
 	@Override
 	public boolean shouldBlock(int pMode) {
 		if (modeSearchChest) {
@@ -247,18 +234,19 @@ public class WacoEntityMode_SugarHunter extends LMM_EntityMode_Basic {
 		}
 		return false;
 	}
-
+	
 	private boolean isFullInventory() {
 		return owner.maidInventory.getFirstEmptyStack() == -1;
 	}
-
+	
 	@Override
 	protected void clearMy() {
 		super.clearMy();
-		SugarBiomeCore.getInstance().debugPrint("SearchChest clear");
-		modeSearchChest = false;	// ƒŠƒZƒbƒg
+		SugarBiomeCore.getInstance().logFine("SearchChest clear");
+		modeSearchChest = false; // ãƒªã‚»ãƒƒãƒˆ
+		owner.aiWander.setEnable(false);
 	}
-
+	
 	private static boolean isModeEnable() {
 		return SugarBiomeCore.getInstance().isRunning();
 	}

@@ -15,12 +15,12 @@
  */
 package mod.ymt.sugar;
 
-import net.minecraft.src.Block;
-import net.minecraft.src.BlockCake;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.World;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockCake;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 /**
  * @author Yamato
@@ -33,13 +33,13 @@ public class BlockCake2 extends BlockCake {
 		setHardness(0.5F);
 		setStepSound(soundClothFootstep);
 		disableStats();
-		func_111022_d("cake");
+		setTextureName("cake");
 	}
 
 	@Override
 	public void onBlockClicked(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer) {
-		// ‰½‚à‚µ‚È‚¢
-		// H‚×‚ÄÁ¸‚·‚é‚Ì‚Æ“¯‚É‰ñû‚·‚é‚Æ  InventoryPlayer.canHarvestBlock ‚Å NullPointerException ‚ªo‚Ä‚µ‚Ü‚¤‚Ì‚Å
+		// ä½•ã‚‚ã—ãªã„
+		// é£Ÿã¹ã¦æ¶ˆå¤±ã™ã‚‹ã®ã¨åŒæ™‚ã«å›åã™ã‚‹ã¨  InventoryPlayer.canHarvestBlock ã§ NullPointerException ãŒå‡ºã¦ã—ã¾ã†ã®ã§
 	}
 
 	@Override
